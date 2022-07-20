@@ -26,9 +26,12 @@ app.put("/container", async (req, res) => {
 // POST http://localhost:8080/blob
 app.put("/blob", async (req, res) => {
     try {
-        await blobServiceClient.getContainerClient("testcontainer").getBlockBlobClient("weather.csv").uploadData(readFileSync("./data/weather.csv"));
-        await blobServiceClient.getContainerClient("testcontainer").getBlockBlobClient("http.csv").uploadData(readFileSync("./data/http.csv"));
-        res.sendStatus(200);
+        await blobServiceClient.getContainerClient("testcontainer").getBlockBlobClient("weather.csv").uploadData(
+            readFileSync("./data/weather.csv"),
+            { metadata: { nature: "lit" } },
+        );
+        const { metadata } = await blobServiceClient.getContainerClient("testcontainer").getBlockBlobClient("weather.csv").getProperties();
+        res.send(metadata);
     } catch (e) {
         console.log((e as Error).message);
         res.sendStatus(500);
